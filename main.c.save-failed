@@ -1,0 +1,1668 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+#include <math.h>
+
+void FCFS_Scheduling();
+void SJF_Scheduling();
+void SRTF_Scheduling();
+void NPP_Scheduling();
+void PP_Scheduling();
+void RR_Scheduling();
+void comparison();
+
+///main
+int mainmenu, firstmenu, sndmenufirst, sndmenusecond;
+
+///FCFS
+int i=0, j=0, FCFS_num_proc, FCFS_arrival[10], FCFS_cpu_burst[10], FCFS_s[10], FCFS_e[10], FCFS_wait_time[50], FCFS_response_time[50], FCFS_ta_time[50];
+float FCFS_ave_wt, FCFS_ave_rt, FCFS_ave_tat;
+
+///SJF
+void SJF_waitTimeFormula();
+void SJF_responseTimeFormula();
+void SJF_turnAroundTimeFormula();
+void SJF_startFormula();
+void SJF_endFormula();
+void SJF_sort();
+void SJF_display();
+void SJF_chart();
+float ave,totalAve1,totalAve2;
+float h1[50],h2[50],h3[50];
+int i,num,j;
+int holder1,holder2,temp,temp2;
+int getter2;
+int AT[50];
+int CPUBT[50];
+int pos[50];
+int start[50];
+int ends[50];
+int end;
+
+///PP
+void PP_drawGanttChart();
+void PP_calculateProcessSequence();
+int PP_findAptProcessNumber(int);
+
+int PP_numberOfProcesses, PP_totalCPUBurstTime, *PP_arrivalTime, *PP_CPUBurstTime, *PP_CPUBurstTimeCopy, *PP_processNumber, PP_minimumArrivalTime, *PP_processSequenceForEachSecond, *PP_waitingTime, *PP_priority;
+int PP_s[999], PP_e[999], PP_completionTime[999];
+float PP_averageWaitingTime, PP_averageTurnAroundTime;
+float PP_averageWaitingTime=0, PP_preaverageWaitingTime[999], PP_preaverageTurnAroundTime[999];
+
+/*arrays used to draw Gantt Chart*/
+int *PP_processNumberGantt, *PP_CPUBurstTimeGantt, PP_ganttSize;
+
+///RR
+void RR_drawGanttChart();
+void RR_calculateProcessSequence();
+int RR_findAptProcessNumber(int,int,int);
+
+int RR_numberOfProcesses, RR_totalCPUBurstTime, *RR_arrivalTime, *RR_CPUBurstTime, *RR_CPUBurstTimeCopy, *RR_processNumber, RR_minimumArrivalTime, *RR_processSequenceForEachSecond, *RR_waitingTime, RR_timeQuantum;
+int RR_s[999], RR_e[999], RR_completionTime[999];
+float RR_averageWaitingTime, RR_averageTurnAroundTime, RR_averageResponseTime;
+float RR_averageWaitingTime=0, RR_responseTime[999], RR_preaverageWaitingTime[999], RR_preaverageTurnAroundTime[999];
+
+/*arrays used to draw Gantt Chart*/
+int *RR_processNumberGantt, *RR_CPUBurstTimeGantt, RR_ganttSize;
+
+int main()
+{
+    printf("\n\n");
+    printf("         O -----------------------------                              O                     \n");
+    printf("                 O -------------------- \\                            /                     \n");
+    printf("                                       \\ \\                          /                     \n");
+    printf("                   +------------------------------------+    ------                         \n");
+    printf("    O              |            CPU SCHEDULING          |---/ ------------ O            \n");
+    printf("     \\             |------------------------------------|----/                             \n");
+    printf("      -----------  |       VILLA, JULIUS ANTHONY A.     |    ---- O                         \n");
+    printf("                   |                                    |--------                           \n");
+    printf("                   |              BSIT - 2A             |------  \\                         \n");
+    printf("                   +------------------------------------+      \\ -------- O              \n");
+    printf("               O -------------/  O ---    /     \\   O   \\      ------- O                \n");
+    printf("                                         /       \\       --------- O                      \n");
+    printf("                O ----------------\\     /        ---------- O                              \n");
+    printf("                            O ----------                                                    \n");
+    printf("          O -----------------------/                                                        \n\n\n\n\n\n");
+    printf("                         Press enter key to continue.                                       \n");
+
+    getchar();
+    system("cls");
+
+    do{
+        printf("\n");
+        printf("                            +-----------------------+       \n");
+        printf("                       +----|      - M E N U -      |----+  \n");
+        printf("                       |    +-----------------------+    |  \n");
+        printf("                       |                                 |  \n");
+        printf("   +--------------------------------------------------------------------------+\n");
+        printf("   |                                                                          |\n");
+        printf("   |             [1]          Create a table with gantt chart                 |\n");
+        printf("   |             [2]          Compare two scheduling algorithms               |\n");
+        printf("   |             [3]          Exit the program                                |\n");
+        printf("   |                                                                          |\n");
+        printf("   |    +----------------------------------------------------------------+    |\n");
+        printf("   +---||              ENTER THE NUMBER THAT YOU WANT TO RUN             ||---+\n");
+        printf("        +----------------------------------------------------------------+     \n");
+        printf("                                    CHOICE : ");
+        scanf("%d",&mainmenu);
+
+        switch(mainmenu){
+
+            case 1:
+                do{
+                    system("cls");
+                    printf("                            +-----------------------+       \n");
+                    printf("                       +----|      - M E N U -      |----+  \n");
+                    printf("                       |    +-----------------------+    |  \n");
+                    printf("                       |                                 |  \n");
+                    printf("   +--------------------------------------------------------------------------+\n");
+                    printf("   |                                                                          |\n");
+                    printf("   |             [1]          Create a table with gantt chart                 |\n");
+                    printf("   |                                                                          |\n");
+                    printf("   |    +----------------------------------------------------------------+    |\n");
+                    printf("   +---||              ENTER THE NUMBER THAT YOU WANT TO RUN             ||---+\n");
+                    printf("        +----------------------------------------------------------------+     \n");
+                    printf("                                    CHOICE : 1 \n");
+                    printf("\n");
+                    printf("                                    |       |                                  \n");
+                    printf("   +--------------------------------------------------------------------------+\n");
+                    printf("   |                                                                          |\n");
+                    printf("   |           [1]           First Come, First Serve (FCFS)                   |\n");
+                    printf("   |           [2]           Shortest Job First (SJF)                         |\n");
+                    printf("   |           [3]           Shortest Remaining Time First (SRTF)             |\n");
+                    printf("   |           [4]           Non-Preemptive Priority (NPP)                    |\n");
+                    printf("   |           [5]           Preemptive Priority (PP)                         |\n");
+                    printf("   |           [6]           Round Robin (RR)                                 |\n");
+                    printf("   |                                                                          |\n");
+                    printf("   |           [0]           Return to Main Menu                              |\n");
+                    printf("   |                                                                          |\n");
+                    printf("   |    +----------------------------------------------------------------+    |\n");
+                    printf("   +-||  ENTER THE NUMBER OF THE CPU SCHEDULING ALGORITHM YOU WANT TO USE  ||-+\n");
+                    printf("        +----------------------------------------------------------------+     \n");
+                    printf("                                    CHOICE : ");
+                    scanf("%d",&firstmenu);
+                    switch(firstmenu){
+                        case 1:
+                            system("cls");
+                            FCFS_Scheduling();
+                            system("pause");
+                            break;
+                        case 2:
+                            system("cls");
+                            SJF_Scheduling();
+                            system("pause");
+                            break;
+                        case 3:
+                            system("cls");
+                            SRTF_Scheduling();
+                            system("pause");
+                            break;
+                        case 4:
+                            system("cls");
+                            NPP_Scheduling();
+                            system("pause");
+                            break;
+                        case 5:
+                            system("cls");
+                            PP_Scheduling();
+                            system("pause");
+                            break;
+                        case 6:
+                            system("cls");
+                            RR_Scheduling();
+                            system("pause");
+                            break;
+                        case 0:
+                            main();
+                            break;
+                        default:
+                            printf("Incorrect number. Please try again.");
+                            break;
+                        }
+                    }while (firstmenu != 7);
+                case 2:
+                    system("cls");
+                    printf("                            +-----------------------+       \n");
+                    printf("                       +----|      - M E N U -      |----+  \n");
+                    printf("                       |    +-----------------------+    |  \n");
+                    printf("                       |                                 |  \n");
+                    printf("   +--------------------------------------------------------------------------+\n");
+                    printf("   |                                                                          |\n");
+                    printf("   |             [2]        Compare two scheduling algorithms                 |\n");
+                    printf("   |                                                                          |\n");
+                    printf("   |    +----------------------------------------------------------------+    |\n");
+                    printf("   +---||              ENTER THE NUMBER THAT YOU WANT TO RUN             ||---+\n");
+                    printf("        +----------------------------------------------------------------+     \n");
+                    printf("                                    CHOICE : 2 \n");
+                    printf("\n");
+                    printf("                                     |       |                                 \n");
+                    printf("   +--------------------------------------------------------------------------+\n");
+                    printf("   |                                                                          |\n");
+                    printf("   |           [1]           First come, first serve (FCFS)                   |\n");
+                    printf("   |           [2]           Shortest job first (SJF)                         |\n");
+                    printf("   |           [3]           Shortest remaining time first (SRTF)             |\n");
+                    printf("   |           [4]           Non - preemptive priority (NPP)                  |\n");
+                    printf("   |           [5]           Preemptive priority (PP)                         |\n");
+                    printf("   |           [6]           Round robin (RR)                                 |\n");
+                    printf("   |                                                                          |\n");
+                    printf("   |           [0]           Return to main menu                              |\n");
+                    printf("   |                                                                          |\n");
+                    printf("   |    +----------------------------------------------------------------+    |\n");
+                    printf("   +---||  ENTER THE NUMBER OF CPU SCHEDULING ALGORITHM YOU WANT TO USE  ||---+\n");
+                    printf("        +----------------------------------------------------------------+     \n");
+                    printf("                            -  FIRST ALGORITHM : ");
+                    scanf("%d", &sndmenufirst);
+                    printf("                            -  SECOND ALGORITHM : ");
+                    scanf("%d", &sndmenusecond);
+                    switch(sndmenufirst){
+                        case 1:
+                            system("cls");
+                            comparison();
+                            system("pause");
+                            break;
+                        case 2:
+                            system("cls");
+                            comparison();
+                            system("pause");
+                            break;
+                        case 3:
+                            system("cls");
+                            comparison();
+                            system("pause");
+                            break;
+                        case 4:
+                            system("cls");
+                            comparison();
+                            system("pause");
+                            break;
+                        case 5:
+                            system("cls");
+                            comparison();
+                            system("pause");
+                            break;
+                        case 6:
+                            system("cls");
+                            comparison();
+                            system("pause");
+                            break;
+                        case 0:
+                            main();
+                            break;
+                        default:
+                            printf("Incorrect number. Please try again.");
+                            break;
+                        }
+                    switch(sndmenusecond){
+                        case 1:
+                            system("cls");
+                            comparison();
+                            system("pause");
+                            break;
+                        case 2:
+                            system("cls");
+                            comparison();
+                            system("pause");
+                            break;
+                        case 3:
+                            system("cls");
+                            comparison();
+                            system("pause");
+                            break;
+                        case 4:
+                            system("cls");
+                            comparison();
+                            system("pause");
+                            break;
+                        case 5:
+                            system("cls");
+                            comparison();
+                            system("pause");
+                            break;
+                        case 6:
+                            system("cls");
+                            comparison();
+                            system("pause");
+                            break;
+                        case 0:
+                            main();
+                            break;
+                        default:
+                            printf("Incorrect number. Please try again.");
+                            break;
+                        }
+                    system("cls");
+                    break;
+                case 3:
+                    exit(1);
+                    break;
+            }
+
+        }while (mainmenu != 4);
+
+    return 0;
+}
+
+///FIRST COME FIRST SERVE SCHEDULING
+void FCFS_Scheduling()
+{
+    printf("OPERATING SYSTEMS: FIRST COME FIRST SERVE\n\n");
+    printf("DIRECTION: ENTER WHAT IS ASKED.\n");
+    printf("ENTER THE NUMBER OF PROCESSES: ");
+    scanf("%d", &FCFS_num_proc);
+    printf("\nENTER THE ARRIVAL TIME OF THE FOLLOWING:\n");
+
+    for(i=0; i<FCFS_num_proc; i++)
+    {
+        printf("P%d: ", i+1);
+        scanf("%d", &FCFS_arrival[i]);
+    }
+
+    printf("\nENTER THE CPU BURST TIME OF THE FOLLOWING:\n");
+    for(j=0; j<FCFS_num_proc; j++)
+    {
+        printf("P%d: ", j+1);
+        scanf("%d", &FCFS_cpu_burst[j]);
+    }
+
+    printf("\n");
+    for(i=0; i<FCFS_num_proc; i++)
+    {
+        if(FCFS_arrival[i]<FCFS_e[i-1])
+        {
+            FCFS_s[i]=FCFS_e[i-1];
+        }
+        else
+        {
+            FCFS_s[i]=FCFS_arrival[i];
+        }
+
+        FCFS_e[i]=FCFS_s[i]+FCFS_cpu_burst[i];
+    }
+
+    for(i=0; i<FCFS_num_proc; i++)
+    {
+        FCFS_wait_time[i]=FCFS_s[i]-FCFS_arrival[i];
+        FCFS_response_time[i]=FCFS_s[i]-FCFS_arrival[i];
+        FCFS_ta_time[i]=FCFS_e[i]-FCFS_arrival[i];
+
+        FCFS_ave_wt += FCFS_wait_time[i];
+        FCFS_ave_rt += FCFS_response_time[i];
+        FCFS_ave_tat += FCFS_ta_time[i];
+    }
+
+    printf("\tARRIVAL TIME\tCPU B.T.\tSTART TIME\tEND TIME\tWAITING TIME\tRESPONSE TIME\tTURNAROUND TIME\n");
+    for(i=0; i<FCFS_num_proc; i++)
+    {
+        printf("P%d\t%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\n", i+1, FCFS_arrival[i], FCFS_cpu_burst[i], FCFS_s[i], FCFS_e[i], FCFS_wait_time[i], FCFS_response_time[i], FCFS_ta_time[i]);
+    }
+    //printf("\t\t\t\t\t\t\t\t---------\t---------\t---------\n");
+    printf("\t\t\t\t\t\t\t\t\tAVE: %.2f\tAVE: %.2f\tAVE: %.2f\n\n", FCFS_ave_wt/3, FCFS_ave_rt/3, FCFS_ave_tat/3);
+
+    printf("GANTT CHART\n");
+    printf("  ");
+    for(i=0; i<FCFS_num_proc; i++)   //start line
+    {
+        for(j=0; j<FCFS_cpu_burst[i]; j++)
+        {
+            printf("--");
+        }
+    }
+    printf("\n|");
+
+    for(i=0; i<FCFS_num_proc; i++)   //process
+    {
+        for(j=0; j<FCFS_cpu_burst[i]-1; j++)
+        {
+            printf(" ");
+        }
+        printf("P%d", i+1);
+
+        for(j=0; j<FCFS_cpu_burst[i]-1; j++)
+        {
+            printf(" ");
+        }
+        printf("|");
+    }
+    printf("\n");
+    printf("  ");
+    for(i=0; i<FCFS_num_proc; i++)   //end line
+    {
+        for(j=0; j<FCFS_cpu_burst[i]; j++)
+        {
+            printf("--");
+        }
+    }
+
+    printf("\n 0");
+    for(i=0; i<FCFS_num_proc; i++)
+    {
+        for(j=0; j<FCFS_cpu_burst[i]; j++)
+        {
+            printf("  ");
+        }
+        if(FCFS_ta_time > 9)
+        {
+            printf("\b");
+        }
+        printf("%d", FCFS_e[i]);
+    }
+
+    printf("\n");
+    for(i=0; i<FCFS_num_proc; i++)
+    {
+        for(j=0; j<FCFS_s[i]; j++)
+        {
+            printf(" ");
+        }
+        if(FCFS_ta_time > 9)
+        {
+            printf("\b");
+        }
+        printf(" P%d", i+1);
+    }
+    printf("\n\n");
+}
+
+void SJF_Scheduling()
+{
+    printf("OPERATING SYSTEMS: SHORTEST JOB FIRST\n\n");
+    printf("DIRECTION: ENTER WHAT IS ASKED.\n");
+    printf("ENTER THE NUMBER OF PROCESSES: ");
+    scanf("%d",&num);
+    if(num>0)
+    {
+        printf("\nENTER THE ARRIVAL TIME OF THE FOLLOWING:\n");
+        for(i=0; i<num; i++)
+        {
+            printf("P%d: ", i+1);
+            scanf("%d", &AT[i]);
+        }
+        printf("\nENTER THE BURST TIME OF THE FOLLOWING:\n");
+        for(j=0; j<num; j++)
+        {
+            printf("P%d: ", j+1);
+            scanf("%d", &CPUBT[j]);
+            pos[j]=j+1;
+        }
+        SJF_sort();
+        SJF_startFormula();
+        SJF_endFormula();
+        SJF_waitTimeFormula();
+        SJF_responseTimeFormula();
+        SJF_turnAroundTimeFormula();
+        SJF_display();
+        SJF_chart();
+    }
+    else
+    {
+        exit(0);
+    }
+    printf("\n");
+}
+void SJF_sort()
+{
+    for(i=0;i<num;i++)
+    {
+        for(j=i+1;j<num;j++)
+        {
+            if(CPUBT[i]>CPUBT[j])
+            {
+                temp=CPUBT[i];
+                CPUBT[i]=CPUBT[j];
+                CPUBT[j]=temp;
+
+                int temp3=AT[i];
+                AT[i]=AT[j];
+                AT[j]=temp3;
+
+
+                 int temp4=pos[i];
+                pos[i]=pos[j];
+                pos[j]=temp4;
+
+            }
+        }
+    }
+
+    for(i=0;i<num;i++)
+    {
+        for(j=i+1;j<num;j++)
+        {
+            if(AT[i]>CPUBT[j])
+            {
+                temp=CPUBT[i];
+                CPUBT[i]=CPUBT[j];
+                CPUBT[j]=temp;
+            }
+        }
+    }
+    for(i=0;i<num;i++)
+    {
+        for(j=i+1;j<num;j++)
+        {
+            if(CPUBT[i]>CPUBT[j])
+            {
+                int temp3=AT[i];
+                AT[i]=AT[j];
+                AT[j]=temp3;
+
+                int temp4=pos[i];
+                pos[i]=pos[j];
+                pos[j]=temp4;
+            }
+        }
+    }
+}
+void SJF_startFormula()
+{
+    for (i=0;i<num;i++)
+    {
+        if (i==0)
+        {
+            start[i]=AT[i];
+            end=CPUBT[i];
+            holder1=start[i];
+        }
+        else if (i==1)
+        {
+            start[i]=end;
+            end=end+CPUBT[i];
+            holder2=start[i];
+        }
+        else
+        {
+            start[i]=end;
+            end=end+CPUBT[i];
+        }
+    }
+}
+void SJF_endFormula()
+{
+    for(i=0;i<num;i++)
+    {
+        if(i==0)
+        {
+            end=CPUBT[i];
+            ends[i]=end;
+        }
+        else if (i==1)
+        {
+            end=end+CPUBT[i];
+            getter2=end;
+            ends[i]=end;
+        }
+        else
+        {
+            end=end+CPUBT[i];
+            ends[i]=end;
+        }
+    }
+}
+void SJF_waitTimeFormula()
+{
+    for (i=0;i<num;i++)
+    {
+        if (i==0)
+        {
+            h1[i]=holder1-AT[i];
+        }
+        else if(i==1)
+        {
+            h1[i]=holder2-AT[i];
+        }
+        else
+        {
+            h1[i]=start[i]-AT[i];
+        }
+        totalAve1+=h1[i]/num;
+    }
+}
+void SJF_responseTimeFormula()
+{
+    for (i=0;i<num;i++)
+    {
+        if (i==0)
+        {
+            h2[i]=holder1-AT[i];
+        }
+        else if(i==1)
+        {
+            h2[i]=holder2-AT[i];
+        }
+        else
+        {
+            h2[i]=start[i]-AT[i];
+        }
+        totalAve2+=h2[i]/num;
+    }
+}
+void SJF_turnAroundTimeFormula()
+{
+    for (i=0;i<num;i++)
+    {
+        if (i==0)
+        {
+            h3[i]=ends[i]-AT[i];
+        }
+        else if(i==1)
+        {
+            h3[i]=getter2-AT[i];
+        }
+        else
+        {
+            h3[i]=ends[i]-AT[i];
+        }
+        ave+=h3[i]/num;
+    }
+}
+void SJF_display()
+{
+    printf("\n\t\tAT\t\tCPUBT\t\tS\t\tE\t\tWT\t\tRT\t\tTAT\n");
+    for(i=0;i<num;i++)
+    {
+        printf("P[%d]\t\t%d\t\t%d\t\t%d\t\t%d\t\t%.2f\t\t%.2f\t\t%.2f",pos[i],AT[i],CPUBT[i],start[i],ends[i],h1[i],h2[i],h3[i]);
+        printf("\n");
+    }
+    printf("\n\t\t\t\t\t\t\t\t\t\tAVE:%.2f\tAVE:%.2f\tAVE:%.2f",totalAve1,totalAve2,ave);
+}
+void SJF_chart()
+{
+    printf("\n-------------------------------------------");
+    printf("\n| ");
+    for(i=0;i<num;i++)
+    {
+        printf("P[%d]\t|",pos[i]);
+    }
+    printf("\n-------------------------------------------");
+    printf("\n0");
+    for (i=0;i<num;i++)
+    {
+        printf("\t%d",ends[i]);
+    }
+}
+
+///SHORTEST REMAINING TIME FIRST
+void SRTF_Scheduling()
+{
+    int a[10],b[10],x[10];
+     int waiting[10],turnaround[10],completion[10],st[10],rt[10],pos[10];
+     int i,j,smallest,count=0,time,n;
+     double avg=0,tt=0,rta=0,end;
+     //system("cls");
+     printf("OPERATING SYSTEMS SHORTEST REMAINING TIME FIRST\n\n");
+     printf("Enter the number of Processes: ");
+     scanf("%d",&n);
+
+     for(i=0;i<n;i++)
+     {
+         printf("\nENTER THE DATA OF P[%d]: \n", i+1);
+         printf("Arrival Time: ");
+         scanf("%d",&a[i]);
+         printf("CPU Burst Time: ");
+         scanf("%d",&b[i]);
+         pos[i]=i+1;
+     }
+
+     /*for(i=0;i<n;i++)
+     {
+        printf("\nEnter the Arrival Time of process %d : ",i+1);
+        scanf("%d",&a[i]);
+        pos[i]=i+1;
+     }
+     for(i=0;i<n;i++)
+     {
+        printf("\nEnter burst time of process %d : ",i+1);
+        scanf("%d",&b[i]);
+        pos[i]=i+1;
+     }*/
+     for(i=0;i<n;i++)
+        x[i]=b[i];
+
+     b[9]=9999;
+
+     for(time=0;count!=n;time++)
+     {
+        smallest=9;
+        for(i=0;i<n;i++)
+        {
+            if(a[i]<=time && b[i]<b[smallest] && b[i]>0 )
+            smallest=i;
+        }
+        b[smallest]--;
+        st[0]=0;
+        rt[0]=0;
+        if(b[smallest]==0)
+        {
+        count++;
+        end=time+1;
+        completion[smallest] = end;
+        st[smallest] = completion[smallest] - x[smallest];
+        rt[smallest] = st[smallest] - a[smallest];
+        waiting[smallest] = end - a[smallest] - x[smallest];
+        rt[smallest] = end - a[smallest] - x[smallest];
+        turnaround[smallest] = end - a[smallest];
+        }
+     }
+     printf("Process \t Arrival \t CPU Burst \tStart \tEnd \tWaiting \tResponse \tTurnaround");
+     for(i=0;i<n;i++)
+     {
+        printf("\n P%d \t\t   %d \t\t %d\t\t%d\t%d\t%d\t\t%d\t\t%d",i+1,a[i],x[i],st[i],completion[i],waiting[i],rt[i],turnaround[i]);
+        avg = avg + waiting[i];
+        tt = tt + turnaround[i];
+        rta = rta + rt[i];
+     }
+     printf("\t\t\t\t\t\t\t\t\t\tAVE: %.2f\tAVE: %.2f\tAVE:%.2f", avg/n, rta/n, tt/n);
+     //getch();
+
+     int temp,temp2;
+     for (i=0; i<n; i++)
+     {
+         for(j=i+1; j<n; j++)
+         {
+             if(completion[i]>completion[j])
+             {
+                 temp=completion[i];
+                 completion[i]=completion[j];
+                 completion[j]=temp;
+
+                 temp2=pos[i];
+                 pos[i]=pos[j];
+                 pos[j]=temp2;
+             }
+         }
+     }
+     printf("\n");
+     printf("\nGANTT CHART\n");
+     printf(" ");
+     for(i=0;i<n;i++)
+     {
+         for(j=0;j<x[i];j++)
+             printf("--");
+             printf(" ");
+     }
+
+     printf("\n|");
+     printf("P1");
+     for(i=0; i<n; i++)
+     {
+         for(j=0; j<x[i]-1;j++)
+            printf(" ");
+            printf("P%d",pos[i]);
+
+         for(j=0; j<x[i]-1;j++)
+            printf(" ");
+            printf("|");
+     }
+     printf("\n");
+
+     for(i=0; i<n; i++)
+     {
+         for(j=0; j<x[i];j++)
+            printf("--");
+            printf(" ");
+     }
+     printf("\n");
+
+
+     printf("0");
+     printf("   1");
+     for(i=0; i<n; i++)
+     {
+         for(j=0; j<x[i];j++)printf("  ");
+         if(completion[i]>n) printf("\b");
+         printf("%d",completion[i]);
+     }
+
+     printf("\n");
+}
+
+///NON-PREEMPTIVE PRIORITY
+void NPP_Scheduling()
+{
+    int n,i,j,k,cnt,icnt,temp,lowest,arrive,chk;
+    float wt = 0, rt = 0, tat = 0;
+    printf("OPERATING SYSTEMS NON-PREEMPTIVE PRIORITY\n");
+    printf("\n Enter the number or processes: ");
+    scanf(" %d", &n);
+
+    int given[n][3];
+    int arrived[n][3];
+    int dupl[n][10];
+    int fin[n][9];
+    int idle[n][3];
+
+    for(i=0;i<n;i++)
+    {
+        printf("\nP[%d]:",i+1);
+        printf(" Enter the AT: ");
+        scanf(" %d", &given[i][0]);
+        printf("      Enter the BT: ");
+        scanf(" %d", &given[i][1]);
+        printf("      Enter the Priority level: ");
+        scanf(" %d", &given[i][2]);
+    }
+    for(i=0;i<n;i++)
+    {
+        dupl[i][0] = i+1;
+        dupl[i][1] = given[i][0];
+        dupl[i][2] = given[i][1];
+        dupl[i][3] = given[i][2];
+        dupl[i][9] = 1;
+    }
+    for(i=0;i<n-1;i++)
+    {
+        for(j=0;j<n-i-1;j++)
+        {
+            if(dupl[j][1]>dupl[j+1][1])
+            {
+                temp = dupl[j+1][0];
+                dupl[j+1][0] = dupl[j][0];
+                dupl[j][0] = temp;
+
+                temp = dupl[j+1][1];
+                dupl[j+1][1] = dupl[j][1];
+                dupl[j][1] = temp;
+
+                temp = dupl[j+1][2];
+                dupl[j+1][2] = dupl[j][2];
+                dupl[j][2] = temp;
+
+                temp = dupl[j+1][3];
+                dupl[j+1][3] = dupl[j][3];
+                dupl[j][3] = temp;
+            }
+            else if(dupl[j][1]==dupl[j+1][1])
+            {
+                if(dupl[j][3]>dupl[j+1][3])
+                {
+                    temp = dupl[j+1][0];
+                    dupl[j+1][0] = dupl[j][0];
+                    dupl[j][0] = temp;
+
+                    temp = dupl[j+1][1];
+                    dupl[j+1][1] = dupl[j][1];
+                    dupl[j][1] = temp;
+
+                    temp = dupl[j+1][2];
+                    dupl[j+1][2] = dupl[j][2];
+                    dupl[j][2] = temp;
+
+                    temp = dupl[j+1][3];
+                    dupl[j+1][3] = dupl[j][3];
+                    dupl[j][3] = temp;
+                }
+
+            }
+        }
+    }
+
+    dupl[0][4] = dupl[0][1];
+    dupl[0][5] = dupl[0][1] + dupl[0][2];
+    dupl[0][6] = 0;
+    dupl[0][7] = 0;
+    dupl[0][8] = dupl[0][5];
+    dupl[0][9] = 0;
+    fin[0][0] = dupl[0][0];
+    fin[0][1] = dupl[0][1];
+    fin[0][2] = dupl[0][2];
+    fin[0][3] = dupl[0][3];
+    fin[0][4] = dupl[0][4];
+    fin[0][5] = dupl[0][5];
+    fin[0][6] = dupl[0][6];
+    fin[0][7] = dupl[0][7];
+    fin[0][8] = dupl[0][8];
+
+    icnt = 0;
+    for(j=1;j<n;j++)
+    {
+        cnt = 0;
+        chk = 0;
+        for(i=1;i<n;i++)
+        {
+            if((dupl[i][1]<=fin[j-1][5])&&(dupl[i][9]==1))
+            {
+                arrived[cnt][0] = dupl[i][1];
+                arrived[cnt][1] = dupl[i][3];
+                cnt++;
+                chk=1;
+            }
+        }
+
+        if(chk==0)
+        {
+            idle[icnt][0] = fin[j-1][5];
+            idle[icnt][1] = dupl[j][2];
+            cnt ++;
+
+            dupl[j][4] = dupl[j][1];
+            dupl[j][5] = dupl[j][1] + dupl[j][2];
+            dupl[j][6] = 0;
+            dupl[j][7] = 0;
+            dupl[j][8] = dupl[j][5];
+            dupl[j][9] = 0;
+            fin[j][0] = dupl[j][0];
+            fin[j][1] = dupl[j][1];
+            fin[j][2] = dupl[j][2];
+            fin[j][3] = dupl[j][3];
+            fin[j][4] = dupl[j][4];
+            fin[j][5] = dupl[j][5];
+            fin[j][6] = dupl[j][6];
+            fin[j][7] = dupl[j][7];
+            fin[0][8] = dupl[0][8];
+
+            continue;
+        }
+
+        arrive = arrived[0][0];
+        lowest = arrived[0][1];
+        for(i=1;i<cnt;i++)
+        {
+            if(arrived[i][1]<lowest)
+            {
+                arrive = arrived[i][0];
+                lowest = arrived[i][1];
+            }
+        }
+        for(i=1;i<n;i++)
+        {
+            if(dupl[i][1]==arrive && dupl[i][3]==lowest)
+            {
+                fin[j][0] = dupl[i][0];
+                fin[j][1] = dupl[i][1];
+                fin[j][2] = dupl[i][2];
+                fin[j][3] = dupl[i][3];
+                if(dupl[i][1]>fin[j-1][5])
+                    fin[j][4] = dupl[i][1];
+                else
+                    fin[j][4] = fin[j-1][5];
+                fin[j][5] = fin[j][4] + fin[j][2];
+                fin[j][6] = fin[j][4] - fin[j][1];
+                fin[j][7] = fin[j][6];
+                fin[j][8] = fin[j][5] - fin[j][1];
+                dupl[i][9] = 0;
+            }
+        }
+    }
+    for(i=0;i<n;i++)
+    {
+        dupl[i][0] = fin[i][0];
+        dupl[i][1] = fin[i][1];
+        dupl[i][2] = fin[i][2];
+        dupl[i][3] = fin[i][3];
+        dupl[i][4] = fin[i][4];
+        dupl[i][5] = fin[i][5];
+        dupl[i][6] = fin[i][6];
+        dupl[i][7] = fin[i][7];
+        dupl[i][8] = fin[i][8];
+    }
+    for(i=0;i<n-1;i++)
+    {
+        for(j=0;j<n-i-1;j++)
+        {
+            if(fin[j][0]>fin[j+1][0])
+            {
+                temp = fin[j+1][0];
+                fin[j+1][0] = fin[j][0];
+                fin[j][0] = temp;
+
+                temp = fin[j+1][1];
+                fin[j+1][1] = fin[j][1];
+                fin[j][1] = temp;
+
+                temp = fin[j+1][2];
+                fin[j+1][2] = fin[j][2];
+                fin[j][2] = temp;
+
+                temp = fin[j+1][3];
+                fin[j+1][3] = fin[j][3];
+                fin[j][3] = temp;
+
+                temp = fin[j+1][4];
+                fin[j+1][4] = fin[j][4];
+                fin[j][4] = temp;
+
+
+                temp = fin[j+1][5];
+                fin[j+1][5] = fin[j][5];
+                fin[j][5] = temp;
+
+                temp = fin[j+1][6];
+                fin[j+1][6] = fin[j][6];
+                fin[j][6] = temp;
+
+                temp = fin[j+1][7];
+                fin[j+1][7] = fin[j][7];
+                fin[j][7] = temp;
+
+                temp = fin[j+1][8];
+                fin[j+1][8] = fin[j][8];
+                fin[j][8] = temp;
+            }
+        }
+    }
+    printf("\n\nProcess\tAT\tBT\tPriority\tS\tE\tWT\tRT\tTAT");
+    for(i=0;i<n;i++)
+    {
+        printf("\nP%d\t%d\t%d\t%d\t\t%d\t%d\t%d\t%d\t%d", fin[i][0], fin[i][1], fin[i][2], fin[i][3], fin[i][4], fin[i][5], fin[i][6], fin[i][7], fin[i][8]);
+    }
+
+    for(i=0;i<n;i++)
+    {
+        wt+=dupl[i][6];
+        rt+=dupl[i][7];
+        tat+=dupl[i][8];
+    }
+
+    wt/=(float)n;
+    rt/=(float)n;
+    tat/=(float)n;
+
+    printf("\n     \t\t\t\t\t     -------------------------");
+    printf("\n     \t\t\t\t\t\t%.2f\t%.2f\t%.2f", wt, rt, tat);
+
+    cnt = 0;
+    printf("\n\n\n%d",cnt);
+    k=0;
+    for(i=0;i<n;i++)
+    {
+        if(cnt==dupl[n-1][5])
+            break;
+
+        if(dupl[i][2]>4)
+        {
+            temp = dupl[i][2]-1;
+
+        }
+        else
+        {
+            temp = 3;
+        }
+
+        if((cnt + dupl[i][2])>10)
+            temp -= 1;
+
+        if(idle[k][0]==cnt)
+        {
+            temp = idle[k][1]-1;
+            cnt += idle[k][1];
+            k++;
+            i--;
+        }
+        else
+            cnt += dupl[i][2];
+
+        for(j=0;j<=temp;j++)
+        {
+            printf("=");
+        }
+
+        printf("%d",cnt);
+    }
+
+    printf("\n|");
+    k=0;
+    cnt=0;
+    for(i=0;i<n;i++)
+    {
+        chk = 0;
+        if(dupl[i][2]>4)
+            temp = dupl[i][2]-3;
+        else
+            temp = 1;
+
+        if(idle[k][0]==cnt)
+        {
+            temp = idle[k][1];
+            k++;
+            chk = 1;
+            i-=1;
+        }
+
+        for(j=0;j<temp;j++)
+        {
+            if((j==temp/2)&&(chk==0))
+                printf("P[%d]",dupl[i][0]);
+            else
+                printf(" ");
+        }
+
+
+        cnt += dupl[i][2];
+        printf("|");
+    }
+
+    cnt = 0;
+    k=0;
+    printf("\n%d",cnt);
+    for(i=0;i<n;i++)
+    {
+        if(cnt==dupl[n-1][5])
+            break;
+
+        if(dupl[i][2]>4)
+        {
+            temp = dupl[i][2]-1;
+
+        }
+        else
+        {
+            temp = 3;
+        }
+
+        if((cnt + dupl[i][2])>10)
+            temp -= 1;
+
+        if(idle[k][0]==cnt)
+        {
+            temp = idle[k][1]-1;
+            cnt += idle[k][1];
+            k++;
+            i--;
+        }
+        else
+            cnt += dupl[i][2];
+
+        for(j=0;j<=temp;j++)
+        {
+            printf("=");
+        }
+
+        printf("%d",cnt);
+    }
+    printf("\n");
+
+    return 0;
+}
+
+///PREEMPTIVE PRIORITY
+void PP_Scheduling()
+{
+    int i;
+    printf("PREEMPTIVE PRIORITY SCHEDULING\n\n");
+    printf("Enter the number of processes: ");
+    scanf("%d",&PP_numberOfProcesses);
+    PP_arrivalTime=(int*)malloc(sizeof(int)*PP_numberOfProcesses);
+    PP_CPUBurstTime=(int*)malloc(sizeof(int)*PP_numberOfProcesses);
+    PP_CPUBurstTimeCopy=(int*)malloc(sizeof(int)*PP_numberOfProcesses);
+    PP_processNumber=(int*)malloc(sizeof(int)*PP_numberOfProcesses);
+    PP_waitingTime=(int*)malloc(sizeof(int)*PP_numberOfProcesses);
+    PP_priority=(int*)malloc(sizeof(int)*PP_numberOfProcesses);
+    PP_minimumArrivalTime=2147483647;
+
+    for(i=0;i<PP_numberOfProcesses;i++)
+    {
+        PP_waitingTime[i]=0;
+        PP_processNumber[i]=i;
+        printf("\nEnter the data for process number: %d\n",i+1);
+        printf("Arrival Time: ");
+        scanf("%d", &PP_arrivalTime[i]);
+        printf("CPU Burst time: ");
+        scanf("%d", &PP_CPUBurstTime[i]);
+        printf("Priority: ");
+        scanf("%d", &PP_priority[i]);
+        PP_CPUBurstTimeCopy[i] = PP_CPUBurstTime[i];
+        PP_totalCPUBurstTime+=PP_CPUBurstTime[i];
+
+        if(PP_minimumArrivalTime > PP_arrivalTime[i])
+            PP_minimumArrivalTime = PP_arrivalTime[i];
+    }
+    PP_processSequenceForEachSecond=(int*)malloc(sizeof(int)*PP_totalCPUBurstTime);
+
+    /* this function calculates the process sequence for each second. */
+
+    PP_calculateProcessSequence();
+
+    for(i=0; i<PP_numberOfProcesses; i++)
+    {
+        if(PP_arrivalTime[i]<PP_e[i-1])
+        {
+            PP_s[i] = PP_e[i-1];
+        }
+        else
+        {
+            PP_s[i] = PP_arrivalTime[i];
+        }
+
+        PP_completionTime[i] =PP_arrivalTime[i]+(PP_waitingTime[i]+PP_CPUBurstTimeCopy[i]);
+        PP_preaverageTurnAroundTime[i] = PP_waitingTime[i]+PP_CPUBurstTimeCopy[i];
+        PP_preaverageWaitingTime[i] = (PP_waitingTime[i]+PP_CPUBurstTimeCopy[i])-PP_CPUBurstTimeCopy[i];
+    }
+
+    // print
+    printf("\n\t\tAT\tCPUBT\tPriority\tS\tE\tRT\t\tWT\t\tTAT\n");
+
+    for(i=0;i<PP_numberOfProcesses;i++)
+    {
+        printf("P%d\t\t%d\t%d\t%d\t\t%d\t%d\t%.2f\t\t%.2f\t\t%.2f", i+1, PP_arrivalTime[i], PP_CPUBurstTimeCopy[i], PP_priority[i], PP_s[i], PP_completionTime[i], PP_preaverageWaitingTime[i], PP_preaverageWaitingTime[i], PP_preaverageTurnAroundTime[i]);
+        printf("\n");
+    }
+    printf("\n\t\t\t\t\t\t\t\tAVE:%.2f\tAVE:%.2f\tAVE:%.2f", PP_averageWaitingTime, PP_averageWaitingTime, PP_averageTurnAroundTime);
+
+    PP_drawGanttChart();
+}
+void PP_calculateProcessSequence()
+{
+    int i, j, pNumber, prevProcess, tempCPUBurstTime, counter, prevProcesss;
+    for(i=PP_minimumArrivalTime; i<PP_totalCPUBurstTime+PP_minimumArrivalTime; i++)
+    {
+        pNumber=PP_findAptProcessNumber(i);
+        PP_processSequenceForEachSecond[i-PP_minimumArrivalTime]=pNumber;
+        PP_CPUBurstTime[pNumber]--;
+        /*
+            calculating the waiting time of each process;
+        */
+        for(j=0;j<PP_numberOfProcesses;j++)
+            if(PP_CPUBurstTime[j]!=0 && PP_arrivalTime[j]<=i && j!=pNumber)
+                PP_waitingTime[j]++;
+    }
+
+    /* calculating the size of gantt chart arrays*/
+    PP_ganttSize=1;
+    prevProcess=PP_processSequenceForEachSecond[0];
+    for(i=0;i<PP_totalCPUBurstTime;i++)
+    {
+        if(prevProcess!=PP_processSequenceForEachSecond[i])
+            PP_ganttSize++;
+        prevProcess=PP_processSequenceForEachSecond[i];
+    }
+
+    /* allocating the size of gantt chart arrays */
+    PP_processNumberGantt=(int*)malloc(sizeof(int)*PP_ganttSize);
+    PP_CPUBurstTimeGantt=(int*)malloc(sizeof(int)*PP_ganttSize);
+
+    /* assigning the values to Gantt Chart Arrays */
+    prevProcess=PP_processSequenceForEachSecond[0];
+    tempCPUBurstTime=0;
+    counter=0;
+    for(i=0;i<PP_totalCPUBurstTime;i++)
+    {
+        if(prevProcess!=PP_processSequenceForEachSecond[i])
+        {
+            PP_processNumberGantt[counter]=prevProcess;
+            PP_CPUBurstTimeGantt[counter]=tempCPUBurstTime;
+            counter++;
+            tempCPUBurstTime=0;
+        }
+        tempCPUBurstTime++;
+        prevProcess=PP_processSequenceForEachSecond[i];
+    }
+
+    PP_CPUBurstTimeGantt[PP_ganttSize-1]=tempCPUBurstTime;
+    PP_processNumberGantt[PP_ganttSize-1]=prevProcess;
+
+
+    /* calculating the averageWaitingTime and averageTurnAroundTime */
+    PP_averageWaitingTime=0;
+    PP_averageTurnAroundTime=0;
+    for(i=0;i<PP_numberOfProcesses;i++)
+    {
+        PP_averageWaitingTime+=PP_waitingTime[i];
+        PP_averageTurnAroundTime+=PP_waitingTime[i]+PP_CPUBurstTimeCopy[i];
+    }
+    PP_averageWaitingTime=PP_averageWaitingTime/(float)PP_numberOfProcesses;
+    PP_averageTurnAroundTime=PP_averageTurnAroundTime/(float)PP_numberOfProcesses;
+
+}
+int PP_findAptProcessNumber(int currentTime)
+{
+    int i,min=2147483647,pNumber;
+    for(i=0;i<PP_numberOfProcesses;i++)
+        if(PP_arrivalTime[i]<=currentTime && min>PP_priority[i] && PP_CPUBurstTime[i]!=0)
+        {
+            min=PP_priority[i];
+            pNumber=i;
+        }
+    return pNumber;
+}
+void PP_drawGanttChart()
+{
+    const int maxWidth=100;
+    int scalingFactor,i,counter,tempi,currentTime;
+    printf("\n\nGANTT CHART:\n\n");
+
+    scalingFactor=maxWidth/PP_totalCPUBurstTime;
+    for(i=0;i<scalingFactor*PP_totalCPUBurstTime+2+PP_ganttSize;i++)
+        printf("-");
+
+    printf("\n|");
+    counter=0,tempi=0;
+    for(i=0;i<scalingFactor*PP_totalCPUBurstTime;i++)
+        if(i==PP_CPUBurstTimeGantt[counter]*scalingFactor+tempi)
+        {
+            counter++;
+            tempi=i;
+            printf("|");
+        }
+        else if(i==(PP_CPUBurstTimeGantt[counter]*scalingFactor)/2+tempi)
+        {
+            printf("P%d",PP_processNumberGantt[counter]+1);
+        }
+        else
+            printf(" ");
+    printf("|");
+    printf("\n");
+    for(i=0;i<scalingFactor*PP_totalCPUBurstTime+2+PP_ganttSize;i++)
+                    printf("-");
+    printf("\n");
+
+    /* printing the time labels of the gantt chart */
+    counter=0;
+    tempi=0;
+    currentTime=PP_minimumArrivalTime;
+    printf("%d", currentTime);
+    for(i=0;i<scalingFactor*PP_totalCPUBurstTime;i++)
+        if(i==PP_CPUBurstTimeGantt[counter]*scalingFactor+tempi)
+        {
+            tempi=i;
+            currentTime+=PP_CPUBurstTimeGantt[counter];
+            PP_averageWaitingTime+=currentTime;
+            counter++;
+            printf("%2d", currentTime);
+        }
+        else
+        {
+            printf(" ");
+        }
+    currentTime+=PP_CPUBurstTimeGantt[counter];
+    printf("%2d\n\n",currentTime);
+}
+
+///ROUND ROBIN
+void RR_Scheduling()
+{
+    int i,j,temp;
+    printf("ROUND ROBIN SCHEDULING\n\n");
+    printf("Enter the number of processes: ");
+    scanf("%d",&RR_numberOfProcesses);
+    printf("Enter the Time Quantum: ");
+    scanf("%d",&RR_timeQuantum);
+    RR_arrivalTime=(int*)malloc(sizeof(int)*RR_numberOfProcesses);
+    RR_CPUBurstTime=(int*)malloc(sizeof(int)*RR_numberOfProcesses);
+    RR_CPUBurstTimeCopy=(int*)malloc(sizeof(int)*RR_numberOfProcesses);
+    RR_processNumber=(int*)malloc(sizeof(int)*RR_numberOfProcesses);
+    RR_waitingTime=(int*)malloc(sizeof(int)*RR_numberOfProcesses);
+    RR_minimumArrivalTime=2147483647;
+
+    for(i=0;i<RR_numberOfProcesses;i++)
+    {
+        RR_waitingTime[i]=0;
+        RR_processNumber[i]=i;
+        printf("\nEnter the data for process number: %d\n",i+1);
+        printf("Arrival Time: ");
+        scanf("%d",&RR_arrivalTime[i]);
+        printf("CPU Burst time: ");
+        scanf("%d",&RR_CPUBurstTime[i]);
+        RR_CPUBurstTimeCopy[i]=RR_CPUBurstTime[i];
+        RR_totalCPUBurstTime+=RR_CPUBurstTime[i];
+        if(RR_minimumArrivalTime>RR_arrivalTime[i])
+        {
+            RR_minimumArrivalTime=RR_arrivalTime[i];
+        }
+    }
+
+    //implementing bubble sort algorithm sorting processes on the basis of arrival time
+    for(i=0;i<RR_numberOfProcesses;i++)
+    {
+        for(j=0;j<RR_numberOfProcesses-i-1;j++)
+        {
+            if(RR_arrivalTime[j]>RR_arrivalTime[j+1])
+            {
+                 temp=RR_arrivalTime[j];
+                 RR_arrivalTime[j]=RR_arrivalTime[j+1];
+                 RR_arrivalTime[j+1]=temp;
+
+                 temp=RR_CPUBurstTime[j];
+                 RR_CPUBurstTime[j]=RR_CPUBurstTime[j+1];
+                 RR_CPUBurstTime[j+1]=temp;
+
+                 temp=RR_processNumber[j];
+                 RR_processNumber[j]=RR_processNumber[j+1];
+                 RR_processNumber[j+1]=temp;
+            }
+        }
+    }
+
+    RR_processSequenceForEachSecond=(int*)malloc(sizeof(int)*RR_totalCPUBurstTime);
+
+    /* this function calculates the process sequence for each second. */
+
+    RR_calculateProcessSequence();
+
+    for(i=0; i<RR_numberOfProcesses; i++)
+    {
+        if(RR_arrivalTime[i]<RR_e[i-1])
+        {
+            RR_s[i]=RR_e[i-1];
+        }
+        else
+        {
+            RR_s[i]=RR_arrivalTime[i];
+        }
+
+        RR_completionTime[i]=RR_arrivalTime[i]+(RR_waitingTime[i]+RR_CPUBurstTimeCopy[i]);
+        RR_s[i]=RR_minimumArrivalTime+(RR_timeQuantum*(i));
+        RR_responseTime[i] = RR_s[i];
+        RR_preaverageTurnAroundTime[i] = RR_waitingTime[i]+RR_CPUBurstTimeCopy[i];
+        RR_preaverageWaitingTime[i] = (RR_waitingTime[i]+RR_CPUBurstTimeCopy[i])-RR_CPUBurstTimeCopy[i];
+        RR_averageResponseTime+=RR_responseTime[i];
+    }
+    RR_averageResponseTime=RR_averageResponseTime/(float)RR_numberOfProcesses;
+    // print
+    printf("\n\tAT\tCPUBT\tS\tE\tRT\t\tWT\t\tTAT\n");
+
+    for(i=0;i<RR_numberOfProcesses;i++)
+    {
+        printf("P[%d]\t%d\t%d\t%d\t%d\t%.2f\t\t%.2f\t\t%.2f", i+1, RR_arrivalTime[i], RR_CPUBurstTimeCopy[i], RR_s[i], RR_completionTime[i], RR_responseTime[i], RR_preaverageWaitingTime[i], RR_preaverageTurnAroundTime[i]);
+        printf("\n");
+    }
+    printf("\n\t\t\t\t\tAVE:%.2f\tAVE:%.2f\tAVE:%.2f", RR_averageResponseTime, RR_averageWaitingTime, RR_averageTurnAroundTime);
+
+    RR_drawGanttChart();
+}
+void RR_calculateProcessSequence()
+{
+    int i, j, pNumber=RR_processNumber[0], prevProcess, tempCPUBurstTime, counter=0, prevProcesss;
+    for(i=RR_minimumArrivalTime;i<RR_totalCPUBurstTime + RR_minimumArrivalTime;i++)
+    {
+        /* here i denotes the current time */
+        prevProcess=pNumber;
+        pNumber=RR_findAptProcessNumber(i,pNumber,counter);
+        if(pNumber==prevProcess)
+        {
+            counter++;
+        }
+        else
+            counter=1;
+
+        RR_CPUBurstTime[pNumber]--;
+        RR_processSequenceForEachSecond[i-RR_minimumArrivalTime]=pNumber;
+        /*
+        calculating the waiting time of each process;
+        */
+        for(j=0;j<RR_numberOfProcesses;j++)
+            if(RR_CPUBurstTime[j]!=0 && RR_arrivalTime[j]<=i && j!=pNumber)
+                RR_waitingTime[j]++;
+
+    }
+
+    RR_ganttSize=1;
+    prevProcess=RR_processSequenceForEachSecond[0];
+    for(i=0;i<RR_totalCPUBurstTime;i++)
+    {
+        if(prevProcess!=RR_processSequenceForEachSecond[i])
+            RR_ganttSize++;
+            prevProcess=RR_processSequenceForEachSecond[i];
+    }
+
+    /* allocating the size of gantt chart arrays */
+    RR_processNumberGantt=(int*)malloc(sizeof(int)*RR_ganttSize);
+    RR_CPUBurstTimeGantt=(int*)malloc(sizeof(int)*RR_ganttSize);
+
+    /* assigning the values to Gantt Chart Arrays */
+    prevProcess=RR_processSequenceForEachSecond[0];
+    tempCPUBurstTime=0;
+    counter=0;
+    for(i=0;i<RR_totalCPUBurstTime;i++)
+    {
+        if(prevProcess!=RR_processSequenceForEachSecond[i])
+        {
+            RR_processNumberGantt[counter]=prevProcess;
+            RR_CPUBurstTimeGantt[counter]=tempCPUBurstTime;
+            counter++;
+            tempCPUBurstTime=0;
+        }
+        tempCPUBurstTime++;
+        prevProcess=RR_processSequenceForEachSecond[i];
+    }
+
+    RR_CPUBurstTimeGantt[RR_ganttSize-1]=tempCPUBurstTime;
+    RR_processNumberGantt[RR_ganttSize-1]=prevProcess;
+
+
+    /* calculating the averageResponseTime, averageWaitingTime and averageTurnAroundTime */
+    RR_averageResponseTime=0;
+    RR_averageWaitingTime=0;
+    RR_averageTurnAroundTime=0;
+    for(i=0;i<RR_numberOfProcesses;i++)
+    {
+        RR_averageWaitingTime+=RR_waitingTime[i];
+        RR_averageTurnAroundTime+=RR_waitingTime[i]+RR_CPUBurstTimeCopy[i];
+    }
+    RR_averageWaitingTime=RR_averageWaitingTime/(float)RR_numberOfProcesses;
+    RR_averageTurnAroundTime=RR_averageTurnAroundTime/(float)RR_numberOfProcesses;
+}
+int RR_findAptProcessNumber(int currentTime,int currentProcess,int time)
+{
+    /* this function returns the process number that should run on currentTime. */
+    /* time variable is used to indicate the time for which a process is being executed */
+    int i, pNumber, answer;
+    if(currentTime!=0 && (time==RR_timeQuantum || RR_CPUBurstTime[currentProcess]==0))
+    {
+        for(i=0;i<RR_numberOfProcesses;i++)
+        {
+            if(RR_processNumber[i]==currentProcess)
+            {
+                if((currentProcess+1)==RR_numberOfProcesses)
+                    answer=0;
+                else
+                    answer=currentProcess+1;
+                while(RR_arrivalTime[answer]>currentTime || RR_CPUBurstTime[answer]==0)
+                    answer=(answer+1)%RR_numberOfProcesses;
+                return answer;
+            }
+        }
+    }
+    else
+    return currentProcess;
+}
+void RR_drawGanttChart()
+{
+    const int maxWidth=100;
+    int scalingFactor, i, counter, tempi, currentTime;
+    printf("\n\nGANTT CHART \n");
+
+    scalingFactor=maxWidth/RR_totalCPUBurstTime;
+    for(i=0;i<scalingFactor*RR_totalCPUBurstTime+2+RR_ganttSize;i++)
+    printf("-");
+    printf("\n|");
+    counter=0,tempi=0;
+    for(i=0;i<scalingFactor*RR_totalCPUBurstTime;i++)
+    if(i==RR_CPUBurstTimeGantt[counter]*scalingFactor+tempi)
+    {
+        counter++;
+        tempi=i;
+        printf("|");
+    }
+    else if(i==(RR_CPUBurstTimeGantt[counter]*scalingFactor)/2+tempi)
+        printf("P%d",RR_processNumberGantt[counter]+1);
+    else
+        printf(" ");
+        printf("|");
+        printf("\n");
+
+    for(i=0;i<scalingFactor*RR_totalCPUBurstTime+2+RR_ganttSize;i++)
+        printf("-");
+        printf("\n");
+
+    /* printing the time labels of the gantt chart */
+    counter=0;
+    tempi=0;
+    currentTime=RR_minimumArrivalTime;
+    printf("%d",currentTime);
+    for(i=0;i<scalingFactor*RR_totalCPUBurstTime;i++)
+        if(i==RR_CPUBurstTimeGantt[counter]*scalingFactor+tempi)
+        {
+            tempi=i;
+            currentTime+=RR_CPUBurstTimeGantt[counter];
+            RR_averageWaitingTime+=currentTime;
+            counter++;
+            printf("%2d",currentTime);
+        }
+        else
+        {
+            printf(" ");
+        }
+
+    currentTime+=RR_CPUBurstTimeGantt[counter];
+    printf("%2d\n\n",currentTime);
+}
+
+///COMPARISON
+void comparison()
+{
+    int A_compare, B_compare, temp;
+
+    system("cls");
+    ///title
+    printf("Comparison of ");
+    if (sndmenufirst==1){
+        printf("FIRST COME FIRST SERVE and ");
+    }
+    else if (sndmenufirst==2){
+        printf("SHORTEST JOB FIRST and ");
+    }
+    else if (sndmenufirst==3){
+        printf("SHORTEST REMAINING TIME FIRST and ");
+    }
+    else if (sndmenufirst==4){
+        printf("NON-PREEMPTIVE PRIORITY and ");
+    }
+    else if (sndmenufirst==5){
+        printf("PREEMPTIVE PRIORITY and ");
+    }
+    else if (sndmenufirst==6){
+        printf("ROUND ROBIN and ");
+    }
+
+    if (sndmenusecond==1){
+        printf("FIRST COME FIRST SERVE ");
+    }
+    else if (sndmenusecond==2){
+        printf("SHORTEST JOB FIRST ");
+    }
+    else if (sndmenusecond==3){
+        printf("SHORTEST REMAINING TIME FIRST ");
+    }
+    else if (sndmenusecond==4){
+        printf("NON-PREEMPTIVE PRIORITY ");
+    }
+    else if (sndmenusecond==5){
+        printf("PREEMPTIVE PRIORITY ");
+    }
+    else if (sndmenusecond==6){
+        printf("ROUND ROBIN ");
+    }
+
+    /**----------------------------------------------------------*/
+    ///print comparison
+    printf("\n\n");
+    if (sndmenufirst==1){
+        //printf("FIRST COME FIRST SERVE and ");
+        FCFS_Scheduling();
+    }
+    else if (sndmenufirst==2){
+        //printf("SHORTEST JOB FIRST and ");
+        SJF_Scheduling();
+    }
+    else if (sndmenufirst==3){
+        //printf("SHORTEST REMAINING TIME FIRST and ");
+        SRTF_Scheduling();
+    }
+    else if (sndmenufirst==4){
+        //printf("NON-PREEMPTIVE PRIORITY and ");
+        NPP_Scheduling();
+    }
+    else if (sndmenufirst==5){
+        //printf("PREEMPTIVE PRIORITY and ");
+        PP_Scheduling();
+    }
+    else if (sndmenufirst==6){
+        //printf("ROUND ROBIN and ");
+        RR_Scheduling();
+    }
+
+    if (sndmenusecond==1){
+        //printf("FIRST COME FIRST SERVE ");
+        FCFS_Scheduling();
+    }
+    else if (sndmenusecond==2){
+        //printf("SHORTEST JOB FIRST ");
+        SJF_Scheduling();
+    }
+    else if (sndmenusecond==3){
+        //printf("SHORTEST REMAINING TIME FIRST ");
+        SRTF_Scheduling();
+    }
+    else if (sndmenusecond==4){
+        //printf("NON-PREEMPTIVE PRIORITY ");
+        NPP_Scheduling();
+    }
+    else if (sndmenusecond==5){
+        //printf("PREEMPTIVE PRIORITY ");
+        PP_Scheduling();
+    }
+    else if (sndmenusecond==6){
+        //printf("ROUND ROBIN ");
+        RR_Scheduling();
+    }
+}

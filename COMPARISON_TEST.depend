@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1585848041 source:c:\users\asus\desktop\bsit-2a\operating systems\programs\comparison_test\main.c
+	<stdio.h>
+	<stdlib.h>
+	<conio.h>
+	<math.h>
+	<windows.h>
+	<time.h>
+
